@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Rogela Siva Kumar | Aspiring React Native Developer</title>
+<meta name="description" content="Portfolio of Rogela Siva Kumar: React.js, JavaScript, Java and Spring Boot developer interested in React Native development." />
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { background: #0a0a0a; color: #fafafa; }
+  .card { transition: transform .25s ease, border-color .25s ease; }
+  .card:hover { transform: translateY(-4px); border-color: #52525b; }
+  .btn { transition: transform .2s ease, background-color .2s ease; }
+  .btn:hover { transform: translateY(-2px); }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  .fade { animation: fadeUp .7s ease both; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState } = React;
+
+/* ---------- Data (taken from the resume only) ---------- */
+const PROFILE = {
+  name: "Rogela Siva Kumar",
+  email: "rogellasivakumar@gmail.com",
+  phone: "+91 9866791246",
+  location: "Bangalore, India",
+  linkedin: "#",   // replace with your LinkedIn URL
+  github: "#",     // replace with your GitHub URL
+  resume: "resume.pdf" // place Siva_Resume.pdf next to this file, renamed resume.pdf
+};
+
+const SKILLS = [
+  { group: "Programming Languages", items: ["Java", "JavaScript", "Python", "SQL"] },
+  { group: "Frontend", items: ["React.js", "HTML5", "CSS3"] },
+  { group: "Backend", items: ["Spring Boot", "Spring Security", "OAuth 2.0", "JWT", "REST APIs", "Hibernate/JPA"] },
+  { group: "Databases", items: ["PostgreSQL", "MySQL", "Redis"] },
+  { group: "Cloud & DevOps", items: ["AWS (EC2, RDS, ECR)", "Docker", "GitHub Actions", "Azure DevOps", "Linux", "CI/CD"] },
+  { group: "Tools", items: ["Git", "GitHub", "Postman", "IntelliJ IDEA", "VS Code", "pgAdmin"] }
+];
+
+const PROJECTS = [
+  {
+    name: "Smart Restaurant & Cafe Management Platform",
+    status: "In development",
+    overview: "A multi-service platform for restaurants and cafes, built with Spring Boot and React.js in a modular microservices architecture.",
+    tech: ["Java 21", "Spring Boot", "Spring Security", "React.js", "PostgreSQL", "Redis", "Docker", "AWS", "GitHub Actions"],
+    contribution: [
+      "Role-based access for platform admins, restaurant admins, cafe admins and employees",
+      "QR-code customer ordering with OTP authentication and digital menu access",
+      "Order tracking and order history identified by phone number",
+      "RESTful APIs and PostgreSQL integration for users, restaurants, orders and transactions"
+    ],
+    challenges: "Configurable pre-order and post-order payment flows, Dockerized services with GitHub Actions builds, and environment-specific Spring profiles for dev and production.",
+    repo: ""
+  },
+  {
+    name: "CodeArena: Online Coding Platform",
+    status: "Full-stack",
+    overview: "An online coding platform where users submit code that is compiled, executed and checked against multiple test cases.",
+    tech: ["React.js", "Spring Boot", "MySQL", "REST APIs", "Java"],
+    contribution: [
+      "Full-stack build with a React.js frontend calling Spring Boot REST APIs",
+      "Backend execution component using Java ProcessBuilder for compilation and execution",
+      "Validation of submissions and tracking of submission status"
+    ],
+    challenges: "Running untrusted code safely on the server and returning validation results to the React frontend through REST APIs.",
+    repo: ""
+  }
+];
+
+const EXPERIENCE = [
+  {
+    role: "Software Developer Intern",
+    org: "Alfahive Private Limited",
+    period: "6 Months",
+    points: [
+      "Developed application features and enhancements based on business requirements on the RADSpa+ project",
+      "Identified and resolved bugs, modified existing code and completed assigned development tasks",
+      "Worked with CI/CD pipelines, feature branches, pipeline troubleshooting and application releases",
+      "Built a sprint and release automation system, integrating Azure DevOps with internal services",
+      "Used Git/GitHub for version control and took part in client demonstrations"
+    ]
+  },
+  {
+    role: "Java Full Stack Trainee",
+    org: "TAP Academy",
+    period: "Dec 2025 – Mar 2026",
+    points: [
+      "Built full-stack applications with Java, Spring Boot, React.js and MySQL",
+      "Implemented REST APIs, CRUD operations, authentication and MVC architecture",
+      "Integrated the database layer using Hibernate/JPA"
+    ]
+  }
+];
+
+/* ---------- Small components ---------- */
+const btn = "btn inline-flex items-center justify-center rounded-lg bg-zinc-200 px-5 py-2.5 text-sm font-medium text-zinc-900 hover:bg-white";
+
+const Section = ({ id, title, children }) => (
+  <section id={id} className="px-6 py-20 scroll-mt-20">
+    <div className="mx-auto max-w-6xl">
+      <h2 className="mb-10 text-3xl font-semibold tracking-tight">{title}</h2>
+      {children}
+    </div>
+  </section>
+);
+
+const Tag = ({ children }) => (
+  <span className="rounded-md border border-zinc-800 bg-zinc-900 px-2.5 py-1 text-xs text-zinc-300">{children}</span>
+);
+
+/* ---------- Navigation ---------- */
+const NAV = ["About", "Skills", "Projects", "Experience", "React & Mobile", "Career Goals", "Contact"];
+
+const Nav = () => {
+  const [open, setOpen] = useState(false);
+  const link = (n) => "#" + n.toLowerCase().replace(/[^a-z]+/g, "-").replace(/-$/, "");
+  return (
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-zinc-900 bg-black/70 backdrop-blur">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        <a href="#home" className="font-semibold">Siva<span className="text-zinc-500">.dev</span></a>
+        <button className="rounded-md px-3 py-1 text-sm text-zinc-300 md:hidden" aria-expanded={open} aria-label="Toggle menu" onClick={() => setOpen(!open)}>Menu</button>
+        <ul className={(open ? "flex" : "hidden") + " absolute inset-x-0 top-full flex-col gap-1 border-b border-zinc-900 bg-black p-4 md:static md:flex md:flex-row md:gap-6 md:border-0 md:bg-transparent md:p-0"}>
+          {NAV.map((n) => (
+            <li key={n}><a href={link(n)} onClick={() => setOpen(false)} className="block py-1 text-sm text-zinc-400 hover:text-white">{n}</a></li>
+          ))}
+        </ul>
+      </nav>
+    </header>
+  );
+};
+
+/* ---------- Hero ---------- */
+const Hero = () => (
+  <section id="home" className="flex min-h-screen items-center px-6 pt-24">
+    <div className="mx-auto grid w-full max-w-6xl items-center gap-12 md:grid-cols-2">
+      <div className="fade">
+        <p className="mb-3 text-zinc-400">Hello, I'm</p>
+        <h1 className="text-4xl font-bold tracking-tight md:text-6xl">{PROFILE.name}</h1>
+        <p className="mt-4 text-xl text-zinc-300">Aspiring React Native Developer | Software Engineer</p>
+        <p className="mt-5 max-w-lg leading-relaxed text-zinc-400">
+          I build React.js interfaces and connect them to Spring Boot REST APIs and PostgreSQL or MySQL databases.
+          I'm now focused on bringing that React knowledge to mobile with React Native and Expo.
+        </p>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <a href="#projects" className={btn}>View Projects</a>
+          <a href={PROFILE.resume} download className={btn}>Download Resume</a>
+          <a href="#contact" className={btn}>Contact Me</a>
+        </div>
+      </div>
+      <div className="fade rounded-2xl border border-zinc-800 bg-zinc-950 p-6 font-mono text-sm leading-7 shadow-2xl" style={{ animationDelay: ".2s" }}>
+        <div className="mb-4 flex gap-1.5"><span className="h-3 w-3 rounded-full bg-zinc-700" /><span className="h-3 w-3 rounded-full bg-zinc-700" /><span className="h-3 w-3 rounded-full bg-zinc-700" /></div>
+        <pre className="overflow-x-auto text-zinc-300"><code>{`const [orders, setOrders] = useState([]);
+
+useEffect(() => {
+  fetch("/api/orders")
+    .then((res) => res.json())
+    .then(setOrders);
+}, []);`}</code></pre>
+      </div>
+    </div>
+  </section>
+);
+
+/* ---------- Sections ---------- */
+const About = () => (
+  <Section id="about" title="About Me">
+    <div className="grid gap-10 md:grid-cols-2">
+      <p className="leading-relaxed text-zinc-400">
+        I'm a Computer Science (Data Science) graduate from G. Pulla Reddy Engineering College with a CGPA of 8.14.
+        I have about six months of professional development experience, mostly on the backend with Java and Spring Boot,
+        and I build frontends with React.js.
+      </p>
+      <p className="leading-relaxed text-zinc-400">
+        I like building applications that are easy to use and reliable. I care about clean API contracts between frontend and backend,
+        and I want to work on mobile apps where those skills can reach users directly.
+      </p>
+    </div>
+  </Section>
+);
+
+const Skills = () => (
+  <Section id="skills" title="Technical Skills">
+    <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      {SKILLS.map((s) => (
+        <div key={s.group} className="card rounded-xl border border-zinc-800 bg-zinc-950 p-6">
+          <h3 className="mb-4 font-medium text-white">{s.group}</h3>
+          <div className="flex flex-wrap gap-2">{s.items.map((i) => <Tag key={i}>{i}</Tag>)}</div>
+        </div>
+      ))}
+    </div>
+  </Section>
+);
+
+const Projects = () => (
+  <Section id="projects" title="Projects">
+    <div className="grid gap-6 md:grid-cols-2">
+      {PROJECTS.map((p) => (
+        <article key={p.name} className="card flex flex-col rounded-xl border border-zinc-800 bg-zinc-950 p-7">
+          <span className="mb-3 w-fit rounded-full bg-zinc-800 px-3 py-0.5 text-xs text-zinc-300">{p.status}</span>
+          <h3 className="text-xl font-semibold">{p.name}</h3>
+          <p className="mt-3 text-zinc-400">{p.overview}</p>
+          <h4 className="mt-5 text-sm font-medium text-white">My contribution</h4>
+          <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-zinc-400">{p.contribution.map((c) => <li key={c}>{c}</li>)}</ul>
+          <h4 className="mt-5 text-sm font-medium text-white">Technical challenges</h4>
+          <p className="mt-2 text-sm text-zinc-400">{p.challenges}</p>
+          <div className="mt-5 flex flex-wrap gap-2">{p.tech.map((t) => <Tag key={t}>{t}</Tag>)}</div>
+          {p.repo && <a href={p.repo} className={btn + " mt-6 w-fit"}>View on GitHub</a>}
+        </article>
+      ))}
+    </div>
+  </Section>
+);
+
+const Experience = () => (
+  <Section id="experience" title="Professional Experience">
+    <div className="space-y-6">
+      {EXPERIENCE.map((e) => (
+        <div key={e.role + e.org} className="card rounded-xl border border-zinc-800 bg-zinc-950 p-7">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h3 className="text-lg font-semibold">{e.role}</h3>
+            <span className="text-sm text-zinc-500">{e.period}</span>
+          </div>
+          <p className="mb-4 text-zinc-400">{e.org}</p>
+          <ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed text-zinc-400">{e.points.map((p) => <li key={p}>{p}</li>)}</ul>
+        </div>
+      ))}
+    </div>
+  </Section>
+);
+
+const ReactMobile = () => (
+  <Section id="react-mobile" title="React & Mobile Development">
+    <div className="grid gap-6 md:grid-cols-2">
+      <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-7">
+        <h3 className="mb-1 font-semibold">Hands-on with React.js</h3>
+        <p className="mb-4 text-sm text-zinc-500">Used in my TAP Academy projects, CodeArena and the restaurant platform.</p>
+        <ul className="list-disc space-y-2 pl-5 text-sm text-zinc-400">
+          <li>Building React components with JSX</li>
+          <li>Calling Spring Boot REST APIs from React frontends</li>
+          <li>Full-stack CRUD flows connecting UI, API and database</li>
+        </ul>
+      </div>
+      <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-7">
+        <h3 className="mb-1 font-semibold">Currently learning</h3>
+        <p className="mb-4 text-sm text-zinc-500">Concepts I am studying for mobile work. Not claimed as production experience.</p>
+        <ul className="list-disc space-y-2 pl-5 text-sm text-zinc-400">
+          <li>Props, state, useState and useEffect in depth</li>
+          <li>useCallback and avoiding unnecessary re-renders</li>
+          <li>Navigation concepts for mobile screens</li>
+          <li>React Native fundamentals and Expo</li>
+          <li>Mobile-responsive layout design</li>
+        </ul>
+      </div>
+    </div>
+  </Section>
+);
+
+const CareerGoals = () => (
+  <Section id="career-goals" title="Career Goals">
+    <div className="max-w-3xl space-y-4 leading-relaxed text-zinc-400">
+      <p>
+        Most of the software I have built so far runs in a browser on a laptop. I want to work on mobile products that people use every day,
+        especially people who reach the internet mainly through their phones and in their own languages.
+      </p>
+      <p>
+        I'm interested in building for Tier 2 and Tier 3 users, where the design of a product decides whether it works at all.
+        React Native and Expo are the tools I want to learn properly, and a team shipping mobile products to real users is the right place to do it.
+      </p>
+      <p>
+        I know I'm early in my mobile journey. What I bring is a solid base in JavaScript, React, REST APIs and the backend services behind them,
+        plus the habits I picked up in CI/CD pipelines and releases: reading existing code, fixing bugs and working with a team.
+      </p>
+    </div>
+  </Section>
+);
+
+const Contact = () => (
+  <Section id="contact" title="Contact">
+    <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+      <div className="space-y-2 text-zinc-300">
+        <p>Email: <a className="underline decoration-zinc-600 hover:text-white" href={"mailto:" + PROFILE.email}>{PROFILE.email}</a></p>
+        <p>Phone: <a className="underline decoration-zinc-600 hover:text-white" href={"tel:" + PROFILE.phone.replace(/\s/g, "")}>{PROFILE.phone}</a></p>
+        <p>LinkedIn: <a className="underline decoration-zinc-600 hover:text-white" href={PROFILE.linkedin} target="_blank" rel="noopener noreferrer">View profile</a></p>
+        <p>GitHub: <a className="underline decoration-zinc-600 hover:text-white" href={PROFILE.github} target="_blank" rel="noopener noreferrer">View profile</a></p>
+        <p>Location: {PROFILE.location}</p>
+      </div>
+      <a href={"mailto:" + PROFILE.email + "?subject=React Native Developer Opportunity"} className={btn + " self-start"}>Email me about the role</a>
+    </div>
+  </Section>
+);
+
+const App = () => (
+  <>
+    <Nav />
+    <main>
+      <Hero />
+      <About />
+      <Skills />
+      <Projects />
+      <Experience />
+      <ReactMobile />
+      <CareerGoals />
+      <Contact />
+    </main>
+    <footer className="border-t border-zinc-900 px-6 py-8 text-center text-sm text-zinc-600">
+      © {new Date().getFullYear()} {PROFILE.name}
+    </footer>
+  </>
+);
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
